@@ -18,4 +18,15 @@ class DetailsFragment : Fragment() {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_details, container, false)
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }
+    fun kaydet(view: View){
+
+    }
+    fun gorselSec(view: View){
+
+    }
 }
