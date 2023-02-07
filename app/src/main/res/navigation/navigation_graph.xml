@@ -22,5 +22,9 @@
         <action
             android:id="@+id/action_detailsFragment_to_listFragment"
             app:destination="@id/listFragment" />
+        <argument
+            android:name="foodId"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 </navigation>

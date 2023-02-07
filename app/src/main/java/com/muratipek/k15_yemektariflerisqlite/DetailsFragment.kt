@@ -4,12 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
@@ -47,6 +45,42 @@ class DetailsFragment : Fragment() {
         }
         binding.imageView.setOnClickListener {
             gorselSec(it)
+        }
+        arguments?.let {
+            val secilenID = DetailsFragmentArgs.fromBundle(it).foodId
+            if(secilenID != -1){
+                binding.button.visibility = View.INVISIBLE
+                //bir yemeği seçti
+                context?.let {
+                    try {
+                        val database = it.openOrCreateDatabase("Yemekler", Context.MODE_PRIVATE, null)
+                        val sqlString = "SELECT * FROM yemekler WHERE id = ?"
+                        val cursor = database.rawQuery("SELECT * FROM yemekler WHERE id = ?", arrayOf(secilenID.toString()))
+
+                        val yemekIsmiIndex = cursor.getColumnIndex("yemekismi")
+                        val yemekMalzemeIndex = cursor.getColumnIndex("yemekmalzemesi")
+                        val yemekGorseliIndex = cursor.getColumnIndex("gorsel")
+                        while (cursor.moveToNext()){
+                            binding.yemekIsmiText.setText(cursor.getString(yemekIsmiIndex))
+                            binding.yemekMalzemeText.setText(cursor.getString(yemekMalzemeIndex))
+
+                            val byteDizisi = cursor.getBlob(yemekGorseliIndex)
+                            val bitmap = BitmapFactory.decodeByteArray(byteDizisi, 0, byteDizisi.size)
+                            binding.imageView.setImageBitmap(bitmap)
+                        }
+                        cursor.close()
+                    }catch (e: Exception){
+                        e.printStackTrace()
+                    }
+                }
+            }else{
+                //yeni yemek eklemeye geldi
+                binding.yemekIsmiText.setText("")
+                binding.yemekMalzemeText.setText("")
+                binding.button.visibility = View.VISIBLE
+                val gorselSecmeArkaPLani = BitmapFactory.decodeResource(context?.resources, R.drawable.selectimage)
+                binding.imageView.setImageBitmap(gorselSecmeArkaPLani)
+            }
         }
     }
     fun kaydet(view: View){
